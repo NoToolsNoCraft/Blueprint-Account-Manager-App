@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Your App</title>
+    
+<style>
+    /* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+/* Heading */
+h1 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Form elements */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #555;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    color: #333;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    border-color: #4CAF50;
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Button */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #45a049;
+}
+
+/* Sign up text */
+.signup-text {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #777;
+}
+
+.signup-text a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-text a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 20px;
+        width: 90%;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+
+    .btn {
+        font-size: 16px;
+    }
+
+    .signup-text {
+        font-size: 12px;
+    }
+}
+
+</style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login to Your Account</h1>
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="name">Username or Email</label>
+                <input id="name" placeholder="Enter your username or email" name="name" type="text" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input id="password" placeholder="Enter your password" name="password" type="password" required>
+            </div>
+            
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <p class="signup-text">Don't have an account? <a href="/register">Create a new account</a></p>
+        <p class="signup-text">Wanna go back to the homepage? <a href="/">Click here!</a></p>
+
+        <!-- Forgot Password Button -->
+        <div class="forgot-password-container">
+            <a href="/reset-password" class="forgot-password-btn">Forgot your password?</a>
+        </div>
+    </div>
+<script>
+   // Login Form Submission
+document.querySelector('form[action="/login"]').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const username = document.querySelector('input[name="name"]').value; // or 'username' if you changed it.
+    const password = document.querySelector('input[name="password"]').value;
+
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: username, password }) // Send data as JSON
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json(); // Try to parse error as JSON
+            const errorMessage = errorData.message || 'Login failed'; // Get error message
+            throw new Error(errorMessage); // Throw an error to be caught
+        }
+
+        const data = await response.json(); // Parse the successful JSON response
+
+        if (data.redirectUrl) {
+            window.location.href = data.redirectUrl; // Redirect to the URL
+        } else {
+            alert(data.message || 'Login successful'); // Show message if no redirect URL
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message); // Display error message to the user
+    }
+});
+
+</script>
+</body>
+</html>
+

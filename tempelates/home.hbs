@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fffb00;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .welcome-container {
+            margin-top: 30vh;
+        }
+
+        /* Mobile Styles (Default) - Styles here apply to smaller screens first */
+        h1 {
+            text-align: center;
+            font-size: 1.8rem; /* Slightly smaller heading on mobile */
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        h2, h3 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.3rem;
+        }
+
+        p {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            width: 100%; /* Or a specific width if needed */
+            margin-bottom: 10px; /* Add some margin below the button if needed */
+        }
+
+        button {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        #change-password-container {
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 95%; /* Adjust as needed for mobile */
+            width: 100%;
+            margin: 10px auto;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        #change-password-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #change-password-container label {
+            text-align: left;
+            font-size: 0.8rem;
+            color: #333;
+        }
+
+        #change-password-container input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        form button {
+            background-color: #f44336;
+            border-radius: 5px;
+            margin-top: 8px;
+            width: 50%;
+            box-sizing: border-box;
+        }
+
+        form button:hover {
+            background-color: #e53935;
+        }
+
+        textarea {
+            max-width: 95%; /* Adjust as needed for mobile */
+            width: 100%;
+            height: 120px;
+            padding: 8px;
+            font-size: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            margin: 10px auto;
+        }
+
+
+        .auth-buttons-container {
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            flex-direction: column; /* Stack buttons vertically on smaller screens */
+            gap: 10px; /* Space between buttons */
+            height: 100%; /* Make the container take up full available height */
+            width: 100%; /* Make the container take up full available width */
+        }
+
+        .auth-buttons-container a { /* Style the links */
+            display: inline-block; /* Treat links like block elements for styling */
+            margin: 5px; /* Add some margin around the links */
+            text-decoration: none; /* remove underline from the link */
+        }
+
+        .auth-buttons-container button {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+            width: 100%; /* Full width on mobile by default */
+        }
+
+        .auth-buttons-container button:hover {
+            background-color: #45a049;
+        }
+
+        /* Desktop Styles (Media Query) - Overrides mobile styles for larger screens */
+        @media (min-width: 769px) { /* Adjust breakpoint as needed */
+            h1 {
+                font-size: 3rem;
+            }
+
+            h2, h3 {
+                font-size: 1.5rem; /* Back to larger size */
+            }
+
+            p {
+                font-size: 1rem; /* Back to larger size */
+            }
+
+            button {
+                font-size: 1rem; /* Back to larger size */
+                width: 20%; /* Buttons no longer full width */
+                padding: 10px 20px; /* Larger padding */
+                margin: 10px; /* Larger margin */
+            }
+
+            #change-password-container {
+                max-width: 600px; /* Fixed width on desktop */
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            #change-password-container label,
+            #change-password-container input {
+                font-size: 1rem; /* Back to larger size */
+            }
+            #change-password-container input{
+                width: auto;
+            }
+
+            textarea {
+                max-width: 600px; /* Fixed width on desktop */
+                height: 200px; /* Larger height */
+                font-size: 1rem; /* Back to larger size */
+            }
+            form button {
+                width: auto;
+                margin-top: 10px;
+            }
+        }
+
+        /* Media query for larger screens (optional - for horizontal arrangement) */
+        @media (min-width: 769px) {
+            .auth-buttons-container {
+                flex-direction: row; /* Arrange buttons horizontally */
+                height: auto; /* Adjust as needed */
+                width: auto;
+            }
+            .auth-buttons-container a {
+                margin: 10px;
+            }
+            .auth-buttons-container button {
+                width: auto; /* Buttons no longer full width */
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {{#if showAuthButtons}}
+       <div class="welcome-container">
+    <h1>Welcome to Our App</h1>
+    <p>Please log in or register to continue.</p>
+    <div class="auth-buttons-container">
+        <a href="/login"><button>Login</button></a>
+        <a href="/register"><button>Register</button></a>
+        </div>
+    </div>
+    {{else}}
+        <h1>Dashboard</h1>
+        <h2>Hello {{naming}}</h2>
+
+        <textarea id="notes" placeholder="Write your notes here..."></textarea>
+
+        <div class="button-container">  
+            <button onclick="updateNotes()">Save Notes</button>
+        </div>
+
+        <!-- Change Password Form -->
+        <div id="change-password-container">
+            <h3>Change Password</h3>
+            <form id="changePasswordForm" action="/change-password" method="POST">
+                <label for="oldPassword">Old Password:</label>
+                <input type="password" id="oldPassword" name="oldPassword" required>
+                <br>
+                <label for="newPassword">New Password:</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+                <br>
+
+                <div class="button-container"> 
+                <button type="submit">Change Password</button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Delete Account Form -->
+        <form id="deleteForm" action="/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?')">
+            <input type="hidden" name="name" value="{{naming}}" />
+            <button type="submit">Delete Account</button>
+        </form>
+
+        <!-- Logout Button -->
+        <form action="/logout" method="POST">
+            <button type="submit">Logout</button>
+        </form>
+    {{/if}}
+
+<script>
+    // Change Password Form Submission
+document.getElementById('changePasswordForm').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+
+    try {
+        const response = await fetch('/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Important for sending JSON data
+            },
+            body: JSON.stringify({ oldPassword, newPassword }) // Send data as JSON
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text(); // Get error message from server
+            throw new Error(errorText || 'Error changing password');
+        }
+
+        const data = await response.text(); // Get success message from server
+        alert(data); // Display success message (or update the UI)
+        document.getElementById('changePasswordForm').reset(); // Clear the form
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message); // Display error message to the user
+    }
+});
+
+// Delete Account Form Submission (similar structure)
+document.getElementById('deleteForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const confirmation = confirm('Are you sure you want to delete your account?');
+    if (!confirmation) return; // User cancelled
+
+    try {
+        const response = await fetch('/delete-account', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: "{{naming}}" }) // Send username (important!)
+        });
+
+        if (!response.ok) {
+           const errorText = await response.text();
+            throw new Error(errorText || 'Error deleting account');
+        }
+
+        const data = await response.text();
+        alert(data);
+        // Redirect or update UI after successful deletion (e.g., redirect to logout or home)
+        window.location.href = '/'; // Example: redirect to logout
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
+});
+
+
+// Logout (simpler, can just redirect)
+document.querySelector('form[action="/logout"]').addEventListener('submit', (event) => {
+    event.preventDefault();
+    fetch('/logout', { method: 'POST' })
+        .then(response => {
+           if (response.ok) {
+                window.location.href = '/'; // Or wherever you want to redirect after logout
+           } else {
+               console.error("Logout failed")
+           }
+        })
+        .catch(error => {
+            console.error("Logout error:", error);
+            alert("Logout failed. Please try again.")
+        });
+});
+
+function updateNotes() {
+            const notes = document.getElementById("notes").value;
+
+            fetch("/update-notes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ notes }),
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                alert(data.message);
+            })
+            .catch((error) => console.error("Error:", error));
+        }
+
+        // Fetch the user's current notes when the page loads
+        window.onload = function () {
+            fetch("/get-user-data")
+            .then(response => response.json())
+            .then(data => {
+                if (data.notes) {
+                    document.getElementById("notes").value = data.notes;
+                }
+            })
+            .catch(error => console.error("Error fetching user data:", error));
+        };
+</script>
+</body>
+</html>
+

@@ -1,0 +1,27 @@
+{
+  "name": "login",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "hbs": "^4.2.0",
+    "mongoose": "^6.13.5",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^2.0.19",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "cypress": "^13.17.0"
+  }
+}
