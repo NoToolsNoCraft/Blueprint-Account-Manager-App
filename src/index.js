@@ -208,7 +208,7 @@ app.post("/request-reset", async (req, res) => {
             { $set: { resetToken, resetTokenExpiry } }
         );
 
-        const resetLink = `https://blueprint-account-manager-app-production.up.railway.app/${resetToken}`;
+        const resetLink = `https://blueprint-account-manager-app-production.up.railway.app/reset-password/${resetToken}`;
 
         // Send reset link via email using nodemailer
         const mailOptions = {
@@ -323,7 +323,7 @@ app.post("/forgot-password", async (req, res) => {
     }
 
     // Generate the reset link
-    const resetLink = `https://blueprint-account-manager-app-production.up.railway.app/${resetToken}`;
+    const resetLink = `https://blueprint-account-manager-app-production.up.railway.app/reset-password/${resetToken}`;
 
     console.log("Reset link:", resetLink); // Debugging
 
