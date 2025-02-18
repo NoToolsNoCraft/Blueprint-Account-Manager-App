@@ -31,8 +31,8 @@ jobs:
           echo "EMAIL_PASS=${EMAIL_PASS}" >> .env
           echo "PORT=5002" >> .env  # Ensure app runs on port 5002
 
-      - name: Start application
-        run: node src/index.js
+      - name: Start Application
+        run: node src/index.js & 
         env:
           PORT: 5002  # Explicitly set the port
 
