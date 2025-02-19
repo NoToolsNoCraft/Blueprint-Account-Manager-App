@@ -1,4 +1,4 @@
-name: Postman Functional/Integration + Jmeter Stress Performance test
+name: Postman Functional/Integration + JMeter Stress Performance Test
 
 on:
   workflow_dispatch:
@@ -30,7 +30,7 @@ jobs:
           echo "PORT=5002" >> .env  # Ensure app runs on port 5002
 
       - name: Start Application
-        run: node src/index.js & 
+        run: node src/index.js &
         env:
           PORT: 5002  # Explicitly set the port
 
@@ -40,18 +40,13 @@ jobs:
       - name: Install OpenJDK 8
         run: sudo apt-get install -y openjdk-8-jdk
 
-      - name: Download and Install JMeter 5.5
-        run: |
-          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz
-          tar xf apache-jmeter-5.5.tgz
-          echo "$PWD/apache-jmeter-5.5/bin" >> $GITHUB_PATH
-          chmod +x $PWD/apache-jmeter-5.5/bin/jmeter
+      - name: Setup JMeter
+        uses: QAInsights/setup-jmeter@v3
+        with:
+          version: '5.5'
 
       - name: Configure JMeter XStream Security
-        run: echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $PWD/apache-jmeter-5.5/bin/jmeter.properties
-
-      - name: List JMeter Directory
-        run: ls -R apache-jmeter-5.5
+        run: echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $(jmeter -v | grep "Home:" | awk '{print $2}')/bin/jmeter.properties
 
       - name: Run JMeter Tests
         run: jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
