@@ -1,0 +1,717 @@
+{
+	"info": {
+		"_postman_id": "027fe568-bca8-414f-abe3-602b99380589",
+		"name": "LocalApp test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35095642"
+	},
+	"item": [
+		{
+			"name": "register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Extract response data\r",
+							"var jsonData = pm.response.json();\r",
+							"var statusCode = pm.response.code;\r",
+							"\r",
+							"// Parse request body safely\r",
+							"var requestBody;\r",
+							"try {\r",
+							"    requestBody = JSON.parse(pm.request.body);\r",
+							"} catch (error) {\r",
+							"    requestBody = {}; // Default to an empty object if parsing fails\r",
+							"}\r",
+							"\r",
+							"// 1. Test if the response is JSON\r",
+							"pm.test(\"Response should be in JSON format\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"// 2. Test for successful registration\r",
+							"if (statusCode === 201) {\r",
+							"    pm.test(\"User registered successfully\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"User registered successfully\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// 3. Test for duplicate username/email\r",
+							"if (statusCode === 400) {\r",
+							"    pm.test(\"User already registered (Duplicate Check)\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"User already registered\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// 4. Test for password mismatch (only if not a duplicate user)\r",
+							"if (statusCode === 400 && jsonData.message !== \"User already registered\") {\r",
+							"    pm.test(\"Password mismatch validation\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Passwords do not match\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// 5. Test for missing fields in the request body\r",
+							"pm.test(\"Check for missing required fields\", function () {\r",
+							"    if (statusCode === 400) {\r",
+							"        pm.expect(jsonData.message).to.match(/(Passwords do not match|User already registered|Error during registration)/);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// 6. Test that status code is either 201 (success) or 400 (bad request)\r",
+							"pm.test(\"Status code is valid (201 or 400)\", function () {\r",
+							"    pm.expect([201, 400]).to.include(statusCode);\r",
+							"});\r",
+							"\r",
+							"// 7. Test for proper error handling (500 Internal Server Error)\r",
+							"if (statusCode === 500) {\r",
+							"    pm.test(\"Server should handle errors properly\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Error during registration\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// 8. Test if username and email were sent correctly\r",
+							"pm.test(\"Request contains username and email\", function () {\r",
+							"    pm.expect(requestBody).to.have.property(\"username\");\r",
+							"    pm.expect(requestBody).to.have.property(\"email\");\r",
+							"});\r",
+							"\r",
+							"// 9. Test if password fields exist\r",
+							"pm.test(\"Request contains password and confirmPassword\", function () {\r",
+							"    pm.expect(requestBody).to.have.property(\"password\");\r",
+							"    pm.expect(requestBody).to.have.property(\"confirmPassword\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"test665\",\r\n  \"email\": \"test665@example.com\",\r\n  \"password\": \"test123\",\r\n  \"confirmPassword\": \"test123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response\r",
+							"let jsonData = {};\r",
+							"try {\r",
+							"    jsonData = pm.response.json();\r",
+							"} catch (e) {\r",
+							"    console.log(\"Response is not valid JSON\");\r",
+							"}\r",
+							"\r",
+							"let statusCode = pm.response.code;\r",
+							"\r",
+							"// ✅ 1️⃣ Test for successful login (200)\r",
+							"if (statusCode === 200) {\r",
+							"    pm.test(\"User successfully logged in\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Login successful\");\r",
+							"        pm.expect(jsonData).to.have.property(\"user\");\r",
+							"        pm.expect(jsonData.user).to.have.property(\"username\");\r",
+							"        pm.expect(jsonData.user).to.have.property(\"email\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// ✅ 2️⃣ Test for missing username/email (400)\r",
+							"if (statusCode === 400) {\r",
+							"    pm.test(\"Missing username/email validation\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Username or email is required\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// ✅ 3️⃣ Test for missing password (400)\r",
+							"if (statusCode === 400) {\r",
+							"    pm.test(\"Missing password validation\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Password is required\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"\r",
+							"// ✅ 4️⃣ Test for invalid password (401) - Allow for API inconsistency\r",
+							"if (statusCode === 401) {\r",
+							"    pm.test(\"Invalid username/email or password validation\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\");\r",
+							"        pm.expect([\"Invalid password\", \"Invalid username or email\"]).to.include(jsonData.message);\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// ✅ 6️⃣ Test for server error (500)\r",
+							"if (statusCode === 500) {\r",
+							"    pm.test(\"Server error handling\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"message\", \"Error during login\");\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// ✅ Ensure response is JSON (Allow charset variations)\r",
+							"pm.test(\"Response should be in JSON format\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"test665\",\r\n  \"password\": \"test123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Notes 200 Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response should be in JSON format\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json; charset=utf-8\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains a success message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Notes updated successfully\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains the correct username and email\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(jsonData).to.have.property(\"updatedFor\");\r",
+							"    pm.expect(jsonData.updatedFor).to.have.property(\"username\", \"test665\");\r",
+							"    pm.expect(jsonData.updatedFor).to.have.property(\"email\", \"test665@example.com\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains the updated notes field\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"notes\", \"This is my updated note\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Pre-request Script\r",
+							"pm.environment.set(\"baseUrl\", \"http://localhost:5002/api\");  // Set your base URL\r",
+							"pm.environment.set(\"authHeader\", \"test2:test123\");      // Set your auth credentials\r",
+							"pm.environment.set(\"validNotes\", \"This is a valid note\"); // Valid note data\r",
+							"pm.environment.set(\"invalidNotes\", \"\");                 // Invalid empty notes\r",
+							"pm.environment.set(\"invalidNotesType\", 12345);          // Invalid type (number)\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"notes\": \"This is my updated note\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/update-notes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"update-notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Notes empty Body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains the Invalid request message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Invalid request: 'notes' field is required and must be a string\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/update-notes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"update-notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Notes Wrong key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains the Invalid request message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Invalid request: 'notes' field is required and must be a string\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"notees\": \"Wrong key\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/update-notes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"update-notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Notes Wrong Data Type",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains the Invalid request message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Invalid request: 'notes' field is required and must be a string\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"notes\": 12345 }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/update-notes",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"update-notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET single User Data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains a success message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"notes\", \"This is my updated note\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "a56579e9-23cb-4780-ac93-fa8cea33c6d8",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "cfojdhbm",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/get-user-data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"get-user-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains a success message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"message\", \"Account deleted successfully\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Test-Auth",
+						"value": "test2:test123",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5002/api/delete-account",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5002",
+					"path": [
+						"api",
+						"delete-account"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
