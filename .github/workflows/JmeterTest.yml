@@ -21,6 +21,7 @@ jobs:
         run: npm install
 
       - name: Create .env file
+        shell: bash
         run: |
           echo "DATABASE_URL=${DATABASE_URL}" >> .env
           echo "SESSION_SECRET=${SESSION_SECRET}" >> .env
@@ -36,21 +37,21 @@ jobs:
       - name: Wait for app to be ready
         run: npx wait-on http://localhost:5002
 
-    - name: Install OpenJDK 8
-      run: sudo apt-get install openjdk-8-jdk
+      - name: Install OpenJDK 8
+        run: sudo apt-get install -y openjdk-8-jdk
 
-    - name: Download and Install JMeter 5.5
-      run: |
-        wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz
-        tar xf apache-jmeter-5.5.tgz
-        echo "$PWD/apache-jmeter-5.5/bin" >> $GITHUB_PATH
+      - name: Download and Install JMeter 5.5
+        run: |
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz
+          tar xf apache-jmeter-5.5.tgz
+          echo "$PWD/apache-jmeter-5.5/bin" >> $GITHUB_PATH
+          chmod +x $PWD/apache-jmeter-5.5/bin/jmeter
 
-    - name: Configure JMeter XStream Security
-      run: |
-        echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $PWD/apache-jmeter-5.5/bin/jmeter.properties
+      - name: Configure JMeter XStream Security
+        run: echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $PWD/apache-jmeter-5.5/bin/jmeter.properties
 
-    - name: List JMeter Directory
-      run: ls -R apache-jmeter-5.5
+      - name: List JMeter Directory
+        run: ls -R apache-jmeter-5.5
 
-    - name: Run JMeter Tests
-      run: jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
+      - name: Run JMeter Tests
+        run: jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
