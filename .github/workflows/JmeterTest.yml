@@ -1,4 +1,4 @@
-name: Postman Functional/Integration + JMeter Stress Performance Test
+name: JMeter Performance Test
 
 on:
   workflow_dispatch:
