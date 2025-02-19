@@ -40,13 +40,23 @@ jobs:
       - name: Install OpenJDK 8
         run: sudo apt-get install -y openjdk-8-jdk
 
-      - name: Setup JMeter
-        uses: QAInsights/setup-jmeter@v3
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v3
         with:
-          version: '5.5'
+          path: apache-jmeter-5.5
+          key: jmeter-5.5-${{ runner.os }}
+
+      - name: Install JMeter if not cached
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
+        run: |
+          wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz
+          tar xf apache-jmeter-5.5.tgz
+          echo "$PWD/apache-jmeter-5.5/bin" >> $GITHUB_PATH
+          chmod +x $PWD/apache-jmeter-5.5/bin/jmeter
 
       - name: Configure JMeter XStream Security
-        run: echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $(jmeter -v | grep "Home:" | awk '{print $2}')/bin/jmeter.properties
+        run: echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $PWD/apache-jmeter-5.5/bin/jmeter.properties
 
       - name: Run JMeter Tests
-        run: jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
+        run: apache-jmeter-5.5/bin/jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
