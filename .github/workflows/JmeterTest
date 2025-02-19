@@ -1,0 +1,56 @@
+name: Postman Functional/Integration + Jmeter Stress Performance test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+    
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create .env file
+        run: |
+          echo "DATABASE_URL=${DATABASE_URL}" >> .env
+          echo "SESSION_SECRET=${SESSION_SECRET}" >> .env
+          echo "EMAIL_USER=${EMAIL_USER}" >> .env
+          echo "EMAIL_PASS=${EMAIL_PASS}" >> .env
+          echo "PORT=5002" >> .env  # Ensure app runs on port 5002
+
+      - name: Start Application
+        run: node src/index.js & 
+        env:
+          PORT: 5002  # Explicitly set the port
+
+      - name: Wait for app to be ready
+        run: npx wait-on http://localhost:5002
+
+    - name: Install OpenJDK 8
+      run: sudo apt-get install openjdk-8-jdk
+
+    - name: Download and Install JMeter 5.5
+      run: |
+        wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.5.tgz
+        tar xf apache-jmeter-5.5.tgz
+        echo "$PWD/apache-jmeter-5.5/bin" >> $GITHUB_PATH
+
+    - name: Configure JMeter XStream Security
+      run: |
+        echo "xstream.security.allowAll=org.apache.jmeter.save.ScriptWrapper" >> $PWD/apache-jmeter-5.5/bin/jmeter.properties
+
+    - name: List JMeter Directory
+      run: ls -R apache-jmeter-5.5
+
+    - name: Run JMeter Tests
+      run: jmeter -n -t Jmeter/PostmanTest.jmx -l results.jtl
